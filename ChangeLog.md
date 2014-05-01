@@ -8,16 +8,21 @@ This file starts at 0.2.4 , before that consult commit log
 
 *For complete history please view commit log*
 
-##Current Version 0.4.8
+##Current Version 0.5.0
 --------------------------	
 
 
-### Proposed Release 0.4.9
+### Proposed Release 0.5.1
 ----------------------------
 
 
 
 * Change History*
++ 0.5.0
+  Change runDB to runDBConf
+  Fix dependencies problem
++ 0.4.9
+  Fix dependencies problem
 + 0.4.8
   isOnDuty used the old runDB instead of runDBConf
 + 0.4.3
