@@ -355,6 +355,7 @@ SingleWellExtras
  url Text
  pollTime Int
  port Int Maybe
+ protocol Text
  deriving Generic
  deriving Eq
  deriving Ord
