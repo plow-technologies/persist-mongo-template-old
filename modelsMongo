@@ -358,3 +358,10 @@ SingleWellExtras
  deriving Generic
  deriving Eq
  deriving Ord
+
+
+-- =================================
+-- AlarmDelete
+AlarmDelete
+ flag AlarmId
+ deriving Generic
