@@ -8,16 +8,20 @@ This file starts at 0.2.4 , before that consult commit log
 
 *For complete history please view commit log*
 
-##Current Version 0.5.0
+##Current Version 0.5.1
 --------------------------	
 
 
-### Proposed Release 0.5.1
+### Proposed Release 0.5.3
 ----------------------------
 
 
 
 * Change History*
++ 0.5.2
+  Add AlarmDelete model
++ 0.5.1
+  Fix dependencies problem
 + 0.5.0
   Change runDB to runDBConf
   Fix dependencies problem
