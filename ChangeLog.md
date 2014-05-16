@@ -18,6 +18,8 @@ This file starts at 0.2.4 , before that consult commit log
 
 
 * Change History*
++ 0.5.3
+  Added protocol field to SingleWellExtras in modelsMongo
 + 0.5.2
   Add AlarmDelete model
 + 0.5.1
