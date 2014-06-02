@@ -8,16 +8,18 @@ This file starts at 0.2.4 , before that consult commit log
 
 *For complete history please view commit log*
 
-##Current Version 0.5.1
+##Current Version 0.5.4
 --------------------------	
 
 
-### Proposed Release 0.5.3
+### Proposed Release 0.5.5
 ----------------------------
 
 
 
 * Change History*
++ 0.5.4
+  Add model AlarmJoins to modelsMongo
 + 0.5.3
   Added protocol field to SingleWellExtras in modelsMongo
 + 0.5.2

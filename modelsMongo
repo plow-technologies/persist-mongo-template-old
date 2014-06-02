@@ -347,6 +347,13 @@ Alarm
  gPermissions UserPermissionsList
  deriving Generic
 
+AlarmJoins
+ alarmId AlarmId
+ companyId CompanyId
+ siteId SiteId
+ locationId LocationId
+ deriving Generic
+
 -- ==================================================
 -- Single Well Types
 -- ==================================================
@@ -360,9 +367,9 @@ SingleWellExtras
  deriving Eq
  deriving Ord
 
-
--- =================================
+-- ==================================================
 -- AlarmDelete
+-- ==================================================
 AlarmDelete
  flag AlarmId
  deriving Generic
