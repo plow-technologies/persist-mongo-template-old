@@ -25,6 +25,9 @@ UserTag
   defaultDash  DashboardId
   phone Int Maybe default = Nothing
   name Text Maybe default = Nothing
+  callAlert Bool
+  emailAlert Bool
+  textAlert Bool
   UniqueUserTag user --REMEMBER THIS HAS TO BE PAIRED WITH AN ENSURE INDEX
   deriving Generic
   deriving Typeable
