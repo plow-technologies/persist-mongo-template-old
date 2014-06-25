@@ -85,7 +85,9 @@ data MaskFcn      = OneVar  (Const -> Either String Const)
 
 -- | Add your builtIn Functions here and in Mask.hs and in Mask.hs
 -- | Always leave UserDefined as the last in BuiltInId type so the getBuilInIdR can strip it off.
-data BuiltInId = DivByTen |MultByTen |MultBy100 |DivBy100 |Bit0 |Bit1 |Bit2 |Bit3 |Bit4 |Bit5 |Bit6 |Bit7 |Bit8 |Bit9 |Bit10 |Bit11 |Bit12 |Bit13 |Bit14 |Bit15 |Identity |UserDefined
+data BuiltInId = DivByTen |MultByTen |MultBy100 |DivBy100 |Bit0 |Bit1 |Bit2 |Bit3 |Bit4 |Bit5 |Bit6 |Bit7 |Bit8 |Bit9 |Bit10 |Bit11 |Bit12 |Bit13 |Bit14 |Bit15
+                 InvBit0 | InvBit1 | InvBit2 | InvBit3 | InvBit4 | InvBit5 | InvBit6 | InvBit7 | InvBit8 | InvBit9 | InvBit10 | InvBit11 | InvBit12 | InvBit13 | InvBit14 | InvBit15 
+               |Identity |UserDefined
     deriving (Eq,Show,Ord,Bounded,Enum,Generic)
 
 
