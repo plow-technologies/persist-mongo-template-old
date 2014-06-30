@@ -107,6 +107,71 @@ bit15 :: Const -> Either String Const
 bit15 (ConstDouble x) = Right $ ConstBool $ testBit ((floor x)::Int) 15
 bit15 _ = Left $ "Expected Double"
 
+
+invBit0 :: Const -> Either String Const
+invBit0 (ConstDouble x) = Right $ ConstBool $ not $ testBit ((floor x) :: Int) 0
+invBit0 _ = Left $ "Expected Double"
+
+invBit1 :: Const -> Either String Const
+invBit1 (ConstDouble x) = Right $ ConstBool $ not $ testBit ((floor x) :: Int) 1
+invBit1 _ = Left $ "Expected Double"
+
+invBit2 :: Const -> Either String Const
+invBit2 (ConstDouble x) = Right $ ConstBool $ not $ testBit ((floor x) :: Int) 2
+invBit2 _ = Left $ "Expected Double"
+
+invBit3 :: Const -> Either String Const
+invBit3 (ConstDouble x) = Right $ ConstBool $ not $ testBit ((floor x) :: Int) 3
+invBit3 _ = Left $ "Expected Double"
+
+invBit4 :: Const -> Either String Const
+invBit4 (ConstDouble x) = Right $ ConstBool $ not $ testBit ((floor x) :: Int) 4
+invBit4 _ = Left $ "Expected Double"
+
+invBit5 :: Const -> Either String Const
+invBit5 (ConstDouble x) = Right $ ConstBool $ not $ testBit ((floor x) :: Int) 5
+invBit5 _ = Left $ "Expected Double"
+
+invBit6 :: Const -> Either String Const
+invBit6 (ConstDouble x) = Right $ ConstBool $ not $ testBit ((floor x) :: Int) 6
+invBit6 _ = Left $ "Expected Double"
+
+invBit7 :: Const -> Either String Const
+invBit7 (ConstDouble x) = Right $ ConstBool $ not $ testBit ((floor x) :: Int) 7
+invBit7 _ = Left $ "Expected Double"
+
+invBit8 :: Const -> Either String Const
+invBit8 (ConstDouble x) = Right $ ConstBool $ not $ testBit ((floor x) :: Int) 8
+invBit8 _ = Left $ "Expected Double"
+
+invBit9 :: Const -> Either String Const
+invBit9 (ConstDouble x) = Right $ ConstBool $ not $ testBit ((floor x) :: Int) 9
+invBit9 _ = Left $ "Expected Double"
+
+invBit10 :: Const -> Either String Const
+invBit10 (ConstDouble x) = Right $ ConstBool $ not $ testBit ((floor x) :: Int) 10
+invBit10 _ = Left $ "Expected Double"
+
+invBit11 :: Const -> Either String Const
+invBit11 (ConstDouble x) = Right $ ConstBool $ not $ testBit ((floor x) :: Int) 11
+invBit11 _ = Left $ "Expected Double"
+
+invBit12 :: Const -> Either String Const
+invBit12 (ConstDouble x) = Right $ ConstBool $ not $ testBit ((floor x) :: Int) 12
+invBit12 _ = Left $ "Expected Double"
+
+invBit13 :: Const -> Either String Const
+invBit13 (ConstDouble x) = Right $ ConstBool $ not $ testBit ((floor x) :: Int) 13
+invBit13 _ = Left $ "Expected Double"
+
+invBit14 :: Const -> Either String Const
+invBit14 (ConstDouble x) = Right $ ConstBool $ not $ testBit ((floor x) :: Int) 14
+invBit14 _ = Left $ "Expected Double"
+
+invBit15 :: Const -> Either String Const
+invBit15 (ConstDouble x) = Right $ ConstBool $ not $ testBit ((floor x) :: Int) 15
+invBit15 _ = Left $ "Expected Double"
+
 -- | BuiltIn functions for returning Identity
 identity :: Const -> Either String Const
 identity (ConstDouble x) = Right $ ConstDouble $ x

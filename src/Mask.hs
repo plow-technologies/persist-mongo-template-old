@@ -62,6 +62,26 @@ maskLookup _ (MaskData Bit13 _) =  return $ OneVar $ bit13
 maskLookup _ (MaskData Bit14 _) =  return $ OneVar $ bit14
 maskLookup _ (MaskData Bit15 _) =  return $ OneVar $ bit15
 
+
+-- | maskLookup for invBit Operation Functions
+maskLookup (MaskData InvBit0 _) =  return $ OneVar $ invBit0
+maskLookup (MaskData InvBit1 _) =  return $ OneVar $ invBit1
+maskLookup (MaskData InvBit2 _) =  return $ OneVar $ invBit2
+maskLookup (MaskData InvBit3 _) =  return $ OneVar $ invBit3
+maskLookup (MaskData InvBit4 _) =  return $ OneVar $ invBit4
+maskLookup (MaskData InvBit5 _) =  return $ OneVar $ invBit5
+maskLookup (MaskData InvBit6 _) =  return $ OneVar $ invBit6
+maskLookup (MaskData InvBit7 _) =  return $ OneVar $ invBit7
+maskLookup (MaskData InvBit8 _) =  return $ OneVar $ invBit8
+maskLookup (MaskData InvBit9 _) =  return $ OneVar $ invBit9
+maskLookup (MaskData InvBit10 _) =  return $ OneVar $ invBit10
+maskLookup (MaskData InvBit11 _) =  return $ OneVar $ invBit11
+maskLookup (MaskData InvBit12 _) =  return $ OneVar $ invBit12
+maskLookup (MaskData InvBit13 _) =  return $ OneVar $ invBit13
+maskLookup (MaskData InvBit14 _) =  return $ OneVar $ invBit14
+maskLookup (MaskData InvBit15 _) =  return $ OneVar $ invBit15
+
+
 -- | maskLookup for Identity Function
 maskLookup _ (MaskData Identity _) =  return $ OneVar $ identity
 
