@@ -8,16 +8,18 @@ This file starts at 0.2.4 , before that consult commit log
 
 *For complete history please view commit log*
 
-##Current Version 0.5.4
+##Current Version 0.5.8
 --------------------------	
 
 
-### Proposed Release 0.5.5
+### Proposed Release 0.5.9
 ----------------------------
 
 
 
 * Change History*
++ 0.5.8
+  Added Inverted Bits
 + 0.5.4
   Add model AlarmJoins to modelsMongo
 + 0.5.3
