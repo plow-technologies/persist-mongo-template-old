@@ -60,6 +60,7 @@ data ContentConfig = AutoReportConfig NullConfigObj
                    | CustomTableConfig !CustomTableConfigObj
                    | CustomTableIdConfig !CustomTableIdConfigObj
                    | RollingReportIdConfig !RollingReportConfigIdObj
+                   | LogConfig !NullConfigObj                     
                      deriving (Read,Show,Eq,Generic) 
 
 
@@ -100,6 +101,7 @@ instance FromJSON ContentConfig where
        <|> ((o .: "CustomTableConfig") >>= (\x -> return $ CustomTableConfig x))
        <|> ((o .: "CustomTableIdConfig") >>= (\x -> return $ CustomTableIdConfig x))
        <|> ((o .: "RollingReportIdConfig") >>= (\x -> return $ RollingReportIdConfig x))
+       <|> ((o .: "LogConfig") >>= (\x -> return $ LogConfig x))              
        <|> fail "Could not parse ContentConfig"
      parseJSON (Array  _) = fail "Whoops it was a: Array"
      parseJSON (String _) = fail "Whoops it was a: String"
@@ -121,6 +123,7 @@ instance ToJSON ContentConfig where
     toJSON (CustomTableConfig      x) = object [ ("CustomTableConfig"         .= x)]
     toJSON (CustomTableIdConfig x) = object [ ("CustomTableIdConfig"          .= x)]
     toJSON (RollingReportIdConfig x) = object [ ("RollingReportIdConfig"          .= x)]
+    toJSON (LogConfig x)                 = object [ ("LogConfig"          .= x)]
 
 
 -- | EditMode is a special config object that is available in any widget to be picked up

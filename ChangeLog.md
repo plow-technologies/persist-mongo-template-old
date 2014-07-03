@@ -8,16 +8,18 @@ This file starts at 0.2.4 , before that consult commit log
 
 *For complete history please view commit log*
 
-##Current Version 0.5.8
+##Current Version 0.5.10
 --------------------------	
 
 
-### Proposed Release 0.5.9
+### Proposed Release 0.5.11
 ----------------------------
 
 
 
 * Change History*
++ 0.5.10
+  Updated ContentConstructor to include logs
 + 0.5.8
   Added Inverted Bits
 + 0.5.4
