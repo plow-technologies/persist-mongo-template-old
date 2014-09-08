@@ -1,61 +1,62 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE EmptyDataDecls    #-}
-{-# LANGUAGE FlexibleContexts  #-}
-{-# LANGUAGE GADTs             #-}
-{-# LANGUAGE QuasiQuotes       #-}
-{-# LANGUAGE TemplateHaskell   #-}
-{-# LANGUAGE TypeFamilies      #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE DeriveDataTypeable        #-}
+{-# LANGUAGE DeriveGeneric             #-}
+{-# LANGUAGE EmptyDataDecls            #-}
+{-# LANGUAGE FlexibleContexts          #-}
+{-# LANGUAGE FunctionalDependencies    #-}
+{-# LANGUAGE GADTs                     #-}
+{-# LANGUAGE MultiParamTypeClasses     #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
-{-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE OverloadedStrings         #-}
+{-# LANGUAGE QuasiQuotes               #-}
+{-# LANGUAGE RankNTypes                #-}
+{-# LANGUAGE RecordWildCards           #-}
+{-# LANGUAGE TemplateHaskell           #-}
+{-# LANGUAGE TypeFamilies              #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Persist.Mongo.Settings where
 
-import Data.Typeable (Typeable)
-import Persist.Mongo.Lens
-import Yesod hiding (runDB)
-import GHC.Generics
+import           Data.Typeable              (Typeable)
+import           GHC.Generics
+import           Persist.Mongo.Lens
+import           Yesod                      hiding (runDB)
 
 -- import Yesod.Core (MonadIO,MonadBaseControl)
-import Data.Text (Text,unpack)
--- import Database.Persist 
-import Database.Persist.MongoDB
-import Database.Persist.Quasi (lowerCaseSettings)
-import Network (PortID (PortNumber))
+import           Data.Text                  (Text, unpack)
+-- import Database.Persist
+import           Database.Persist.MongoDB
+import           Database.Persist.Quasi     (lowerCaseSettings)
+import           Network                    (PortID (PortNumber))
 -- import Control.Lens.Lens
 -- import Database.Persist.TH
-import Language.Haskell.TH.Syntax hiding (location)
-import Data.Time
-import Data.ByteString hiding (unpack,group)
-import qualified  Data.Yaml as Y
+import           Data.ByteString            hiding (group, unpack)
+import           Data.Time
+import qualified Data.Yaml                  as Y
+import           Language.Haskell.TH.Syntax hiding (location)
 -- import qualified Data.Aeson as A
-import qualified Data.ByteString as BS
-import Control.Applicative  ((<$>),(<*>))
+import           Control.Applicative        ((<$>), (<*>))
+import qualified Data.ByteString            as BS
 
-import ContentCfgTypes
-import WidgetTypes
-import Permissions
+import           ContentCfgTypes
+import           Permissions
+import           WidgetTypes
 -- share [mkPersist (mkPersistSettings (ConT ''MongoBackend)) { mpsGeneric = False }, mkMigrate "migrateAll"][persistLowerCase|
 -- Questionnaire
 --   desc Text Maybe
 --   questions [Question]
---   deriving Show Eq Read 
+--   deriving Show Eq Read
 -- Question
 --   formulation Text
---   deriving Show Eq Read 
+--   deriving Show Eq Read
 -- |]
 
 
-instance ToJSON a => ToJSON (Entity a) where 
-  toJSON = keyValueEntityToJSON 
+instance ToJSON a => ToJSON (Entity a) where
+  toJSON = keyValueEntityToJSON
 
 
-instance FromJSON a => FromJSON (Entity a) where 
-  parseJSON = keyValueEntityFromJSON 
+instance FromJSON a => FromJSON (Entity a) where
+  parseJSON = keyValueEntityFromJSON
 
 
 data MongoDBConf =  MongoDBConf {
@@ -78,7 +79,7 @@ instance ToJSON MongoDBConf where
     toJSON (MongoDBConf {..} ) = object [
                  "host" .= host,
                  "db"   .= db,
-                 "port" .= port]                 
+                 "port" .= port]
 
 
 share [mkPersist (mkPersistSettings (ConT ''MongoBackend)) { mpsGeneric = False }, mkMigrate "migrateAll"]
@@ -95,13 +96,13 @@ share [mkPersist (mkPersistSettings (ConT ''MongoBackend)) { mpsGeneric = False 
 
 runDB :: forall (m :: * -> *) b.(MonadIO m ,MonadBaseControl IO m) =>
                Action m b -> m b
-runDB a = withMongoDBConn "onping_production" "10.84.207.130" (PortNumber 27017) Nothing 2000 $ \pool -> do 
+runDB a = withMongoDBConn "onping_production" "10.84.207.130" (PortNumber 27017) Nothing 2000 $ \pool -> do
   (runMongoDBPool master a )  pool
 
 
 runDBConf :: forall (m :: * -> *) b.(MonadIO m ,MonadBaseControl IO m) =>
                MongoDBConf -> Action m b -> m b
-runDBConf (MongoDBConf host db port) a = withMongoDBConn db (unpack host) (PortNumber $ fromIntegral port) Nothing 2000 $ \pool -> do 
+runDBConf (MongoDBConf host db port) a = withMongoDBConn db (unpack host) (PortNumber $ fromIntegral port) Nothing 2000 $ \pool -> do
   (runMongoDBPool slaveOk a )  pool
 
 readDBConf :: FilePath -> IO (Either String MongoDBConf)
@@ -111,8 +112,8 @@ readDBConf fPath = do
 
 
 
-instance ToJSON Group where 
-instance FromJSON Group where 
+instance ToJSON Group where
+instance FromJSON Group where
 
 instance ToJSON UserTag where
 instance FromJSON UserTag where
@@ -126,12 +127,12 @@ instance FromJSON RollingReportConfigEntry  where
 instance ToJSON RollingReportPid where
 instance FromJSON RollingReportPid  where
 
-instance ToJSON OnpingTagHistory where 
-    toJSON (OnpingTagHistory {..}) = object 
+instance ToJSON OnpingTagHistory where
+    toJSON (OnpingTagHistory {..}) = object
                                       [
-                                        "pid"	              .= onpingTagHistoryPid			 
-                                      , "time"	              .= onpingTagHistoryTime			 
-                                      , "val"	              .= onpingTagHistoryVal                     
+                                        "pid"	              .= onpingTagHistoryPid
+                                      , "time"	              .= onpingTagHistoryTime
+                                      , "val"	              .= onpingTagHistoryVal
                                       ]
 
 
@@ -170,23 +171,23 @@ persistMakeClassy ''Company
 
 persistMakeClassy ''Site
 
-persistMakeClassy ''Location 
+persistMakeClassy ''Location
 persistMakeClassy ''Robot
 
-persistMakeClassy ''Unit 
+persistMakeClassy ''Unit
 persistMakeClassy ''LocationTableWidget
 persistMakeClassy ''MultiLocationTableWidget
 persistMakeClassy ''PDFTableWidget
 persistMakeClassy ''CalendarWidget
-persistMakeClassy ''Prospective 
-persistMakeClassy ''ReportRow 
+persistMakeClassy ''Prospective
+persistMakeClassy ''ReportRow
 persistMakeClassy ''AutoReport
-persistMakeClassy ''MaskScript 
+persistMakeClassy ''MaskScript
 persistMakeClassy ''MaskTypeJoin
-persistMakeClassy ''MaskDataStore 
-persistMakeClassy ''MaskType 
+persistMakeClassy ''MaskDataStore
+persistMakeClassy ''MaskType
 persistMakeClassy ''TableByMultiLocConfigObj
-persistMakeClassy ''TableByLocConfigObj 
+persistMakeClassy ''TableByLocConfigObj
 persistMakeClassy ''CustomTableConfigObj
 persistMakeClassy ''CustomTableIdConfigObj
 persistMakeClassy ''RollingReportConfigIdObj

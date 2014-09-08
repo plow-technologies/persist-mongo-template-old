@@ -1,16 +1,17 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 module Util.CalendarUtil where
 
-import Data.Aeson.Types
-import Data.Time
-import Data.Time.Calendar.WeekDate
-import Persist.Mongo.Settings
-import Control.Applicative
-import Yesod hiding (runDB)
-import Data.Traversable
-import Data.List
+import           Control.Applicative
+import           Data.Aeson.Types
+import           Data.List
+import           Data.Time
+import           Data.Time.Calendar.WeekDate
+import           Data.Traversable
+import           Persist.Mongo.Settings
+import           Yesod                       hiding (runDB)
 
--- | Helper functions to explicity do type conversion 
+-- | Helper functions to explicity do type conversion
 
 isOnDuty :: MongoDBConf -> UserId -> UTCTime -> IO Bool
 isOnDuty mdbc uid time = do
@@ -53,15 +54,15 @@ testIsOnDuty = do
   _ <- traverse (\user -> print (entityKey user, userTagName .entityVal $ user)) users
   t <- liftIO $ getCurrentTime
   let tList = t:(buildTimeList t)
-  putStrLn "Day List: " 
+  putStrLn "Day List: "
   _ <- traverse (\tm -> print tm) tList
   putStrLn "Result List: "
-  _ <- traverse (\time -> checkDailyDuty mConf users time) tList 
+  _ <- traverse (\time -> checkDailyDuty mConf users time) tList
   putStrLn "\n =============Done=============="
 
 checkDailyDuty :: MongoDBConf -> [Entity UserTag] -> UTCTime -> IO [()]
 checkDailyDuty conf users t = do
-   putStrLn "\nCurrent Date is: " >> (print t) 
+   putStrLn "\nCurrent Date is: " >> (print t)
    traverse (checkOnDuty conf t) users
 
 buildTimeList :: UTCTime -> [UTCTime]

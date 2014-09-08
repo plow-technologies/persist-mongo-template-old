@@ -1,16 +1,16 @@
-{-# LANGUAGE NoImplicitPrelude,OverloadedStrings #-}
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Main where
-import Persist.Mongo.Settings
-import Prelude (print,($),(.), IO )
-import Database.Persist
--- import Database.Persist.Class
+import           Database.Persist
+import           Persist.Mongo.Settings
+import           Prelude                (IO, print, ($), (.))
+-- Types
+import           Control.Applicative    ((<$>))
+import           Data.Either
 
-import Data.Either
-import Control.Applicative ((<$>))
 
- 
-main :: IO () 
-main = do 
+main :: IO ()
+main = do
   res <- runDB $ selectList [] [Asc DashboardId]
   print $ dashboardDefault.entityVal <$> res
   mConf <- readDBConf "config.yml"

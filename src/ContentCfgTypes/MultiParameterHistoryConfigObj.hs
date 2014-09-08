@@ -1,47 +1,55 @@
-{-# LANGUAGE TupleSections, OverloadedStrings, QuasiQuotes, TemplateHaskell, TypeFamilies, RecordWildCards,DeriveGeneric, MultiParamTypeClasses, FlexibleInstances  #-}
+{-# LANGUAGE DeriveGeneric         #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE QuasiQuotes           #-}
+{-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE TemplateHaskell       #-}
+{-# LANGUAGE TupleSections         #-}
+{-# LANGUAGE TypeFamilies          #-}
 module ContentCfgTypes.MultiParameterHistoryConfigObj where
 
-import Prelude hiding (head, init, last
-                      ,readFile, tail, writeFile)
+import           Prelude              hiding (head, init, last, readFile, tail,
+                                       writeFile)
 
-import Control.Applicative ((<$>), (<*>))
-import Yesod 
+import           Control.Applicative  ((<$>), (<*>))
+import           Yesod
 
 
-import Data.Time
+import           Data.Time
 
-import Data.Text
-import ContentCfgTypes.Util
+import           ContentCfgTypes.Util
+import           Data.Text
 
 -- | ==================================================
--- | MultiParameterHistoryConfigObj config 
--- | ================================================== 
+-- | MultiParameterHistoryConfigObj config
+-- | ==================================================
 
-data MultiParameterHistoryConfigObj =  MultiParameterHistoryConfigObj { 
-      mhistoryStep :: Double
-     ,mhistoryDelta :: Double
-     ,mhistoryStart :: UTCTime
-     ,mhistoryEnd   :: UTCTime
+data MultiParameterHistoryConfigObj =  MultiParameterHistoryConfigObj {
+      mhistoryStep    :: Double
+     ,mhistoryDelta   :: Double
+     ,mhistoryStart   :: UTCTime
+     ,mhistoryEnd     :: UTCTime
      ,mhistoryPIDList :: Text
 
     }
    deriving (Read, Show, Eq)
 
-instance FromJSON MultiParameterHistoryConfigObj where 
-    parseJSON (Object tObj) = MultiParameterHistoryConfigObj <$> 
+instance FromJSON MultiParameterHistoryConfigObj where
+    parseJSON (Object tObj) = MultiParameterHistoryConfigObj <$>
                           tObj .: "step"  <*>
                           tObj .: "dt" <*>
                           tObj .: "startDate" <*>
                           tObj .: "endDate"   <*>
                           tObj .: "pidList"
-                           
+
 
     parseJSON _ = fail "Rule: Expecting multi parameter history object object received, other"
 
-instance ToJSON MultiParameterHistoryConfigObj where 
-    toJSON (MultiParameterHistoryConfigObj {..}) = object 
-                        [ 
-                         "step"  .= mhistoryStep 
+instance ToJSON MultiParameterHistoryConfigObj where
+    toJSON (MultiParameterHistoryConfigObj {..}) = object
+                        [
+                         "step"  .= mhistoryStep
                          ,"dt" .= mhistoryDelta
                          ,"startDate" .= mhistoryStart
                          ,"endDate"   .= mhistoryEnd
