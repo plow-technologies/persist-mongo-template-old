@@ -92,7 +92,7 @@ Test-Suite spec
                       , containers               
                       , unordered-containers     
                       , lens                     
-                      , quickcheck               
+                      , QuickCheck              
 
 Executable persist-mongo-template
     main-is:            Main.hs
