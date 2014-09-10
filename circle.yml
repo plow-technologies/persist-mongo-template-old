@@ -20,7 +20,7 @@ dependencies:
 
 test:
   override:
-    - cabal configure
+    - cabal configure --enable-tests
     - cabal build:
         timeout: 3000
     - cabal test --show-details=always:
