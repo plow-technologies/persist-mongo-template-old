@@ -4,8 +4,6 @@ machine:
 
   environment:
     PATH: $HOME/.cabal/bin:$CIRCLE_ARTIFACTS:$PATH/$HOME/persist-mongo-template/.cabal-sandbox/bin
-general:
-  build_dir: persist-mongo-template
 
 dependencies:
   cache_directories:
@@ -25,8 +23,8 @@ test:
     - cabal configure
     - cabal build:
         timeout: 3000
-    # - cabal test --show-details=always:
-    #    timeout: 3000
+    - cabal test --show-details=always:
+        timeout: 3000
 
 # deployment:
 #   staging:

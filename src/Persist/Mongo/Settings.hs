@@ -38,8 +38,11 @@ import           Control.Applicative        ((<$>), (<*>))
 import qualified Data.ByteString            as BS
 
 import           ContentCfgTypes
+import           Data.Aeson                 ((.!=), (.:?))
+import           Data.Typeable
 import           Permissions
 import           WidgetTypes
+
 -- share [mkPersist (mkPersistSettings (ConT ''MongoBackend)) { mpsGeneric = False }, mkMigrate "migrateAll"][persistLowerCase|
 -- Questionnaire
 --   desc Text Maybe
@@ -50,6 +53,12 @@ import           WidgetTypes
 --   deriving Show Eq Read
 -- |]
 
+let mongoSettings = (mkPersistSettings (ConT ''MongoBackend))
+                        { mpsGeneric = False
+                        }
+
+ in share [mkPersist mongoSettings]
+    $(persistFileWith lowerCaseSettings "modelsMongo")
 
 instance ToJSON a => ToJSON (Entity a) where
   toJSON = keyValueEntityToJSON
@@ -58,6 +67,69 @@ instance ToJSON a => ToJSON (Entity a) where
 instance FromJSON a => FromJSON (Entity a) where
   parseJSON = keyValueEntityFromJSON
 
+-- JSON
+instance ToJSON OnpingTagCombined where
+    toJSON (OnpingTagCombined {..}) = object
+                                      ["location_id"          .= onpingTagCombinedLocation_id            ,
+                                       "slave_parameter_id"  .= onpingTagCombinedSlave_parameter_id      ,
+                                       "parameter_tag_id"    .= onpingTagCombinedParameter_tag_id        ,
+                                       "description"         .= onpingTagCombinedDescription             ,
+                                       "unit_id"             .= onpingTagCombinedUnit_id                 ,
+                                       "status_active"       .= onpingTagCombinedStatus_active           ,
+                                       "status_writable"     .= onpingTagCombinedStatus_writable         ,
+                                       "last_update"         .= onpingTagCombinedLast_update             ,
+                                       "result"              .= onpingTagCombinedResult                  ,
+                                       "validation_code"     .= onpingTagCombinedValidation_code         ,
+                                       "permissions"         .= onpingTagCombinedPermissions             ,
+                                       "delete"              .= onpingTagCombinedDelete                  ,
+                                       "company"	     .= onpingTagCombinedCompanyIdRef		 ,
+                                       "site"	             .= onpingTagCombinedSiteIdRef      	 ,
+                                       "location"	     .= onpingTagCombinedLocation		 ,
+                                       "pid"                 .= onpingTagCombinedPid
+                                      ]
+
+instance FromJSON OnpingTagCombined where
+    parseJSON (Object o) = OnpingTagCombined <$>
+                                      o .:? "location_id"         .!= Nothing <*>
+                                      o .:? "slave_parameter_id"  .!= Nothing <*>
+                                      o .:? "parameter_tag_id"    .!= Nothing <*>
+                                      o .:? "description"         .!= Nothing <*>
+                                      o .:? "unit_id"             .!= Nothing <*>
+                                      o .:? "status_active"       .!= Nothing <*>
+                                      o .:? "status_writable"     .!= Nothing <*>
+                                      o .:? "last_update"         .!= Nothing <*>
+                                      o .:? "result"              .!= Nothing <*>
+                                      o .:? "validation_code"     .!= Nothing <*>
+                                      o .:? "permissions"         .!= Nothing <*>
+                                      o .:? "delete"              .!= Nothing <*>
+                                      o .:? "company"	          .!= Nothing <*>
+                                      o .:? "site"	          .!= Nothing <*>
+                                      o .:? "location"	          .!= Nothing <*>
+                                      o .:? "pid"                 .!= Nothing
+    parseJSON _ = fail "Rule: Expecting OnpingTagCombined Recieved Other"
+
+
+instance ToJSON Location where
+    toJSON (Location {..}) = object
+                             [  "site"	   .=  locationSiteIdRef
+                              , "slaveId"  .=  locationSlaveId
+                              , "refId"    .=  locationRefId
+                              , "name"	   .=  locationName
+                              , "url"	   .=  locationUrl
+                              , "delete"   .=  locationDelete
+                              , "company"  .=  locationCompanyIdRef
+                             ]
+
+instance FromJSON Location where
+    parseJSON (Object l) = Location <$>
+                           l .: "site"	     <*>
+                           l .: "slaveId"   <*>
+                           l .: "refId"     <*>
+                           l .: "name"	     <*>
+                           l .: "url"	     <*>
+                           l .: "delete"    <*>
+                           l .: "company"
+    parseJSON _ = fail "Rule: Expecting Object {site:<val>,slaveId:<val>,refId:<val>,name:<val>,url:<val>,delete:<val>,company:<val>} recieved other}"
 
 data MongoDBConf =  MongoDBConf {
      host :: Text
@@ -82,8 +154,8 @@ instance ToJSON MongoDBConf where
                  "port" .= port]
 
 
-share [mkPersist (mkPersistSettings (ConT ''MongoBackend)) { mpsGeneric = False }, mkMigrate "migrateAll"]
-          $(persistFileWith lowerCaseSettings "modelsMongo")
+-- share [mkPersist (mkPersistSettings (ConT ''MongoBackend)) { mpsGeneric = False }, mkMigrate "migrateAll"]
+--           $(persistFileWith lowerCaseSettings "modelsMongo")
 
 
 
