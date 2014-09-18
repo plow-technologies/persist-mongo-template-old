@@ -88,7 +88,7 @@ maskLookup _ (MaskData Identity _) =  return $ OneVar $ identity
 -- | maskLookup for UserDefined Function
 maskLookup mdbc (MaskData UserDefined  um) =  UserDef <$> (tagMapTransform mdbc um)
 -- maskLookup (MaskData _  um ) =  return $ OneVar $ (\x -> Right x)
-    
+
 maskPullOut :: MaskFcn -> Const -> Either String Const
 maskPullOut (OneVar f ) = f
 maskPullOut (UserDef f) = f
@@ -106,8 +106,7 @@ triggerTransform :: MongoDBConf -> UserMask ->
 triggerTransform mdbc (UserMask _ tm) fcn = do
   vtReady <- M.traverseWithKey (keyTraverseFcn mdbc) tm
   return $ fcn (VT vtReady)
-
-
+    
 keyTraverseFcn :: MongoDBConf -> Text -> (TagTarget Int) -> IO Const
 keyTraverseFcn mdbc _  (TagTarget i _ ) = do
   let eTextToDouble :: Entity OnpingTagCombined  -> Maybe Double
@@ -116,7 +115,6 @@ keyTraverseFcn mdbc _  (TagTarget i _ ) = do
   case (v >>= eTextToDouble) of
     Just opv -> return (ConstDouble opv)
     Nothing  -> fail "No value found"
-
 
 tagMapTransform :: MongoDBConf -> UserMask -> IO (Const -> Either String Const)
 tagMapTransform mdbc (UserMask stmt tm)  = do
@@ -162,9 +160,9 @@ makeMaskTypeIdFromJSON = cnvServe.cnv
 
 
 data SSTConfig = SSTConfig{
-                         inputValues :: [Integer], -- Test values used in mask creation
-                         inputNames  :: [Text],    -- Names of various input labels in order
-                         workingCode ::  Text --structured script code body
+                         inputValues :: ![Integer], -- Test values used in mask creation
+                         inputNames  :: ![Text],    -- Names of various input labels in order
+                         workingCode ::  !Text --structured script code body
 } deriving (Show, Eq, Generic)
 
 instance A.ToJSON SSTConfig
@@ -175,17 +173,15 @@ testStructuredScript :: SSTConfig
 testStructuredScript = SSTConfig [] [] ""
 
 
-
-
 decodeMaskAssignConfig :: A.Value -> A.Result MaskAssignConfig
 decodeMaskAssignConfig = A.fromJSON
      
 data MaskAssignConfig = MaskAssignConfig { 
-  macMaskTypeId :: Maybe MaskTypeId,
-  macKeys       :: [Int],
-  macBuiltIn    :: BuiltInId,
-  macDefault    :: Bool,
-  macName       :: Maybe Text
+  macMaskTypeId :: !(Maybe MaskTypeId),
+  macKeys       :: ![Int],
+  macBuiltIn    :: !BuiltInId,
+  macDefault    :: !Bool,
+  macName       :: !(Maybe Text)
   }
    deriving (Show,Eq,Generic)
 
@@ -254,7 +250,7 @@ getMaskFunctionDefault mdbc pid = do
 
 -- insertPidKeys :: UserMask -> [Int] -> UserMask
 
-mdsToFcn :: MongoDBConf ->[Int] -> MaskDataStore -> IO (Either Text (Const -> Either String Const ))
+mdsToFcn :: MongoDBConf -> [Int] -> MaskDataStore -> IO (Either Text (Const -> Either String Const ))
 mdsToFcn mdbc pids mds = do 
   let emd =  (eStringToEText.maskDataDecode $ mds)
       eum = ( (\um -> insertPidKeys um pids ) . userMask) <$> emd

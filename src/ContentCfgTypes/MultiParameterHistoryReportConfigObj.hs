@@ -1,50 +1,61 @@
-{-# LANGUAGE TupleSections, OverloadedStrings, QuasiQuotes, TemplateHaskell, TypeFamilies, RecordWildCards,DeriveGeneric, MultiParamTypeClasses, FlexibleInstances,DeriveGeneric,DeriveDataTypeable  #-}
+{-# LANGUAGE DeriveDataTypeable    #-}
+{-# LANGUAGE DeriveGeneric         #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE QuasiQuotes           #-}
+{-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE TemplateHaskell       #-}
+{-# LANGUAGE TupleSections         #-}
+{-# LANGUAGE TypeFamilies          #-}
 module ContentCfgTypes.MultiParameterHistoryReportConfigObj where
-import GHC.Generics
-import Data.Typeable (Typeable)
-import Prelude hiding (head, init, last
-                      ,readFile, tail, writeFile)
+import           Data.Typeable                                  (Typeable)
+import           GHC.Generics
+import           Prelude                                        hiding (head,
+                                                                 init, last,
+                                                                 readFile, tail,
+                                                                 writeFile)
 
-import Control.Applicative ((<$>), (<*>))
-import Yesod 
+import           Control.Applicative                            ((<$>), (<*>))
+import           Yesod
 
 
-import Data.Time
+import           Data.Time
 
-import Data.Text
-import ContentCfgTypes.Util
-import ContentCfgTypes.MultiParameterHistoryConfigObj
+import           ContentCfgTypes.MultiParameterHistoryConfigObj
+import           ContentCfgTypes.Util
+import           Data.Text
 
 -- | ==================================================
--- | MultiParameterHistoryReportConfigObj config 
--- | ================================================== 
+-- | MultiParameterHistoryReportConfigObj config
+-- | ==================================================
 
-data MultiParameterHistoryReportConfigObj =  MultiParameterHistoryReportConfigObj { 
-      rhistoryStep :: Double
-     ,rhistoryDelta :: Double
-     ,rhistoryStart :: UTCTime
-     ,rhistoryEnd   :: UTCTime
+data MultiParameterHistoryReportConfigObj =  MultiParameterHistoryReportConfigObj {
+      rhistoryStep    :: Double
+     ,rhistoryDelta   :: Double
+     ,rhistoryStart   :: UTCTime
+     ,rhistoryEnd     :: UTCTime
      ,rhistoryPIDList :: Text
-     ,rhistoryTitle :: Text
+     ,rhistoryTitle   :: Text
     }
    deriving (Read, Show, Eq,Generic,Typeable)
 
-instance FromJSON MultiParameterHistoryReportConfigObj where 
-    parseJSON (Object tObj) = MultiParameterHistoryReportConfigObj <$> 
+instance FromJSON MultiParameterHistoryReportConfigObj where
+    parseJSON (Object tObj) = MultiParameterHistoryReportConfigObj <$>
                           tObj .: "step"  <*>
                           tObj .: "dt" <*>
                           tObj .: "startDate" <*>
                           tObj .: "endDate"   <*>
                           tObj .: "pidList"   <*>
                           tObj .: "title"
-                           
+
 
     parseJSON _ = fail "Rule: Expecting multi parameter history object object received, other"
 
-instance ToJSON MultiParameterHistoryReportConfigObj where 
-    toJSON (MultiParameterHistoryReportConfigObj {..}) = object 
-                        [ 
-                         "step"  .= rhistoryStep 
+instance ToJSON MultiParameterHistoryReportConfigObj where
+    toJSON (MultiParameterHistoryReportConfigObj {..}) = object
+                        [
+                         "step"  .= rhistoryStep
                          ,"dt" .= rhistoryDelta
                          ,"startDate" .= rhistoryStart
                          ,"endDate"   .= rhistoryEnd

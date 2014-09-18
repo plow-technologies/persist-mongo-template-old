@@ -1,28 +1,39 @@
-{-# LANGUAGE TupleSections, OverloadedStrings, QuasiQuotes, TemplateHaskell, TypeFamilies, RecordWildCards,DeriveGeneric, MultiParamTypeClasses, FlexibleInstances  #-}
+{-# LANGUAGE DeriveGeneric         #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE QuasiQuotes           #-}
+{-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE TemplateHaskell       #-}
+{-# LANGUAGE TupleSections         #-}
+{-# LANGUAGE TypeFamilies          #-}
 module ContentCfgTypes.Util where
-import Prelude hiding (head, init, last
-                      ,readFile, tail, writeFile , map, zipWith)
+import           Prelude          hiding (head, init, last, map, readFile, tail,
+                                   writeFile, zipWith)
 
 
-import Yesod 
-import Control.Applicative ((<$>), (<*>))
-import qualified WidgetTypes as W
--- import qualified Database.MongoDB as MDB
-import Data.Aeson.Types
-import System.Locale
-import Data.Time
+import           Data.Aeson.Types
+import           System.Locale
+import qualified WidgetTypes      as W
+import           Yesod
+-- Types
+import           Data.Text
+import           Data.Time
+import           Text.Read
 
-import Data.Text
---import Yesod
-
-
--- | Helper functions to explicity do type conversion 
+-- | Helper functions to explicity do type conversion
 
 intVal :: Text -> Value
 intVal = toJSON.intRead
   where
     intRead :: Text -> Int
     intRead = read.unpack
+
+intMaybeVal :: Text -> Value
+intMaybeVal = toJSON . intMaybeParse
+ where
+  intMaybeParse :: Text -> Maybe Int
+  intMaybeParse = readMaybe.unpack
 
 intListVal :: Text -> Value
 intListVal = toJSON.intListRead
@@ -41,7 +52,7 @@ textVal = toJSON
 
 utcVal :: Text -> Value
 utcVal = toJSON.timeRead
-    where 
+    where
       timeRead :: Text -> UTCTime
       timeRead = (readTime defaultTimeLocale (unpack W.stdTimeFormat)).unpack
 
@@ -49,23 +60,23 @@ utcVal = toJSON.timeRead
 -- | "o51ffc5907671f95ad8000000"
 locVal :: Text -> Value
 locVal = toJSON . cnvServe.cnv
-    where 
+    where
         cnv :: Text -> Value
         cnv = toJSON.unpack
         cnvServe :: (Value -> Maybe PersistValue)
         cnvServe t = case fromJSON t of
                        (Success l) -> Just l
-                       (Error _ ) -> Nothing 
+                       (Error _ ) -> Nothing
 
 
 text2PersistVal :: Text -> Value
 text2PersistVal = toJSON . cnvServe.cnv
-    where 
+    where
         cnv :: Text -> Value
         cnv = toJSON.unpack
         cnvServe :: (Value -> Maybe PersistValue)
         cnvServe t = case fromJSON t of
                        (Success l) -> Just l
-                       (Error _ ) -> Nothing 
+                       (Error _ ) -> Nothing
 
 

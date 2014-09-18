@@ -1,23 +1,28 @@
-{-# LANGUAGE BangPatterns,RankNTypes,OverloadedStrings #-}
-{-# LANGUAGE CPP, DeriveDataTypeable, FlexibleContexts,
-  GeneralizedNewtypeDeriving, MultiParamTypeClasses,DeriveGeneric,
-  TemplateHaskell, TypeFamilies, RecordWildCards #-}
+{-# LANGUAGE CPP                        #-}
+{-# LANGUAGE DeriveDataTypeable         #-}
+{-# LANGUAGE DeriveGeneric              #-}
+{-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE RankNTypes                 #-}
+{-# LANGUAGE RecordWildCards            #-}
+{-# LANGUAGE TemplateHaskell            #-}
+{-# LANGUAGE TypeFamilies               #-}
 
-module Mask.Types where 
+module Mask.Types where
 
-import Prelude hiding (head, init, last
-                      ,readFile, tail, writeFile)
+import           Prelude                           hiding (head, init, last,
+                                                    readFile, tail, writeFile)
 
 
-import GHC.Generics
-import qualified Data.HashMap.Strict as M
-import qualified Data.Hashable as H
-import Language.StructuredScript.Parsers 
-import Yesod 
---import Text.Julius
---import qualified Data.Aeson as A
-import Data.Text
-import Data.String (IsString)
+import qualified Data.Hashable                     as H
+import qualified Data.HashMap.Strict               as M
+import           Data.String                       (IsString)
+import           Data.Text
+import           GHC.Generics
+import           Language.StructuredScript.Parsers
+import           Yesod
 
 testCompile :: String
 testCompile = "tst"
@@ -31,7 +36,7 @@ testCompile = "tst"
 
 data TagType = TagHistory | TagCombined
   deriving (Show,Eq)
-           
+
 -- | TargetId is left as a generic Type variable in case I decide the best
 --   way to store it is by storing the query itself (the middle part of a selectFirst or selectList)
 data TagTarget a = TagTarget { targetId :: a , targetType :: TagType}
@@ -63,11 +68,11 @@ sampleTagIMap = M.insert "input1" (TagTarget 299 TagHistory) M.empty
    * All Parameters BUT THE FIRST are looked up using OnpingTagCombined
      +This may change for now but it is currently beyond the scope
       of SST to handle mapping and pairing times with inputs
-   
-    
+
+
 |-}
-  
-data UserMask = UserMask {   getStmtTree :: Stmt ,
+
+data UserMask = UserMask {   getStmtTree     :: Stmt ,
                              getInputLookups :: M.HashMap Text (TagTarget Int)
                            }  -- ^ TagIMap Int
     deriving (Eq,Show)
@@ -75,10 +80,10 @@ data UserMask = UserMask {   getStmtTree :: Stmt ,
 emptyUserMask :: UserMask
 emptyUserMask = UserMask Nop M.empty
 
--- (TagTargetTransform a b)               
+-- (TagTargetTransform a b)
 -- (TagTarget a -> TagTargetTransform a b)
 -- type TagTargetTransform a b = forall m .(Monad m, Functor m) => TagTarget a ->  ( b -> m b)
-                       
+
 data MaskFcn      = OneVar  (Const -> Either String Const)
                   | UserDef (Const -> Either String Const)  -- Tag
 
@@ -86,12 +91,12 @@ data MaskFcn      = OneVar  (Const -> Either String Const)
 -- | Add your builtIn Functions here and in Mask.hs and in Mask.hs
 -- | Always leave UserDefined as the last in BuiltInId type so the getBuilInIdR can strip it off.
 data BuiltInId = DivByTen |MultByTen |MultBy100 |DivBy100 |Bit0 |Bit1 |Bit2 |Bit3 |Bit4 |Bit5 |Bit6 |Bit7 |Bit8 |Bit9 |Bit10 |Bit11 |Bit12 |Bit13 |Bit14 |Bit15 |
-                 InvBit0 | InvBit1 | InvBit2 | InvBit3 | InvBit4 | InvBit5 | InvBit6 | InvBit7 | InvBit8 | InvBit9 | InvBit10 | InvBit11 | InvBit12 | InvBit13 | InvBit14 | InvBit15 
+                 InvBit0 | InvBit1 | InvBit2 | InvBit3 | InvBit4 | InvBit5 | InvBit6 | InvBit7 | InvBit8 | InvBit9 | InvBit10 | InvBit11 | InvBit12 | InvBit13 | InvBit14 | InvBit15
                 |Identity |UserDefined
     deriving (Eq,Show,Ord,Bounded,Enum,Generic)
 
 
--- | Add Built In Masks that you have created to this list so they may be created in 
+-- | Add Built In Masks that you have created to this list so they may be created in
 listBuiltInMasks :: [BuiltInId]
 listBuiltInMasks = [DivByTen,MultByTen,MultBy100,DivBy100,Bit0,Bit1,Bit2,Bit3,Bit4,Bit5,Bit6,Bit7,Bit8,Bit9,Bit10,Bit11,Bit12,Bit13,Bit14,Bit15,Identity]
 
