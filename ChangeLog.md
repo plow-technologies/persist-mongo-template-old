@@ -18,6 +18,11 @@ This file starts at 0.2.4 , before that consult commit log
 
 
 * Change History*
++ 0.5.15
+  Updated structured script dependencies
+  persist-mongoDB bumps for 1.2x
+  fail over parsers
+  
 + 0.5.10
   Updated ContentConstructor to include logs
 + 0.5.8
