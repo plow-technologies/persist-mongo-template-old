@@ -14,34 +14,32 @@
 {-# LANGUAGE TypeFamilies              #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-module Persist.Mongo.Settings where
+module Persist.Mongo.Settings ( module Plowtech.Persist.Settings
+                              , runDB
+                              , readDBConf
+                              ) where
 
-import           Data.Typeable              (Typeable)
-import           GHC.Generics
-import           Persist.Mongo.Lens
-import           Yesod                      hiding (runDB)
-
--- import Yesod.Core (MonadIO,MonadBaseControl)
+import           Data.Aeson                 ((.!=), (.:?))
+import           Control.Applicative        ((<$>), (<*>))
+import           Data.ByteString            hiding (group, unpack)
 import           Data.Text                  (Text, unpack)
--- import Database.Persist
+import           Data.Time
 import           Database.Persist.MongoDB
 import           Database.Persist.Quasi     (lowerCaseSettings)
-import           Network                    (PortID (PortNumber))
--- import Control.Lens.Lens
--- import Database.Persist.TH
-import           Data.ByteString            hiding (group, unpack)
-import           Data.Time
-import qualified Data.Yaml                  as Y
+import           GHC.Generics
 import           Language.Haskell.TH.Syntax hiding (location)
--- import qualified Data.Aeson as A
-import           Control.Applicative        ((<$>), (<*>))
+import           Network                    (PortID (PortNumber))
+import           Persist.Mongo.Lens
+import           Yesod                      hiding (runDB)
 import qualified Data.ByteString            as BS
+import qualified Data.Yaml                  as Y
+
 
 import           ContentCfgTypes
-import           Data.Aeson                 ((.!=), (.:?))
 import           Data.Typeable
 import           Permissions
 import           WidgetTypes
+import           Plowtech.Persist.Settings
 
 -- share [mkPersist (mkPersistSettings (ConT ''MongoBackend)) { mpsGeneric = False }, mkMigrate "migrateAll"][persistLowerCase|
 -- Questionnaire
@@ -53,16 +51,8 @@ import           WidgetTypes
 --   deriving Show Eq Read
 -- |]
 
-let mongoSettings = (mkPersistSettings (ConT ''MongoBackend))
-                        { mpsGeneric = False
-                        }
-
- in share [mkPersist mongoSettings]
-    $(persistFileWith lowerCaseSettings "modelsMongo")
-
 instance ToJSON a => ToJSON (Entity a) where
   toJSON = keyValueEntityToJSON
-
 
 instance FromJSON a => FromJSON (Entity a) where
   parseJSON = keyValueEntityFromJSON
@@ -131,35 +121,6 @@ instance FromJSON Location where
                            l .: "company"
     parseJSON _ = fail "Rule: Expecting Object {site:<val>,slaveId:<val>,refId:<val>,name:<val>,url:<val>,delete:<val>,company:<val>} recieved other}"
 
-data MongoDBConf =  MongoDBConf {
-     host :: Text
-    ,db   :: Text
-    ,port :: Int
-    }
-   deriving (Read, Show,Eq,Typeable)
-instance FromJSON MongoDBConf where
-    parseJSON (Object tObj) = MongoDBConf <$>
-                          tObj .: "host" <*>
-                          tObj .: "db" <*>
-                          tObj .: "port"
-
-    parseJSON _ = fail "Rule: Expecting MongoDB Config Object Received, Other"
-
-
-
-instance ToJSON MongoDBConf where
-    toJSON (MongoDBConf {..} ) = object [
-                 "host" .= host,
-                 "db"   .= db,
-                 "port" .= port]
-
-
--- share [mkPersist (mkPersistSettings (ConT ''MongoBackend)) { mpsGeneric = False }, mkMigrate "migrateAll"]
---           $(persistFileWith lowerCaseSettings "modelsMongo")
-
-
-
-
 
 
 {-===========================================================================-}
@@ -170,12 +131,6 @@ runDB :: forall (m :: * -> *) b.(MonadIO m ,MonadBaseControl IO m) =>
                Action m b -> m b
 runDB a = withMongoDBConn "onping_production" "10.84.207.130" (PortNumber 27017) Nothing 2000 $ \pool -> do
   (runMongoDBPool master a )  pool
-
-
-runDBConf :: forall (m :: * -> *) b.(MonadIO m ,MonadBaseControl IO m) =>
-               MongoDBConf -> Action m b -> m b
-runDBConf (MongoDBConf host db port) a = withMongoDBConn db (unpack host) (PortNumber $ fromIntegral port) Nothing 2000 $ \pool -> do
-  (runMongoDBPool slaveOk a )  pool
 
 readDBConf :: FilePath -> IO (Either String MongoDBConf)
 readDBConf fPath = do

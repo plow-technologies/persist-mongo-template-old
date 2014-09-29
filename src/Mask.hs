@@ -33,6 +33,8 @@ import qualified Data.Traversable as T
 import Data.Text hiding (zip)
 import Data.Text.Read
 
+import Plowtech.Persist.Settings (MongoDBConf, runDBConf)
+
 testCompile :: String
 testCompile = "tst"
 
@@ -108,13 +110,7 @@ triggerTransform mdbc (UserMask _ tm) fcn = do
   return $ fcn (VT vtReady)
     
 keyTraverseFcn :: MongoDBConf -> Text -> (TagTarget Int) -> IO Const
-keyTraverseFcn mdbc _  (TagTarget i _ ) = do
-  let eTextToDouble :: Entity OnpingTagCombined  -> Maybe Double
-      eTextToDouble = (onpingTagCombinedResult.entityVal) >=> (readMaybe.unpack)
-  v <- runDBConf mdbc $ selectFirst [OnpingTagCombinedPid ==. (Just i)] []
-  case (v >>= eTextToDouble) of
-    Just opv -> return (ConstDouble opv)
-    Nothing  -> fail "No value found"
+keyTraverseFcn = keyTraverseFcn
 
 tagMapTransform :: MongoDBConf -> UserMask -> IO (Const -> Either String Const)
 tagMapTransform mdbc (UserMask stmt tm)  = do

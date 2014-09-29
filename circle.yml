@@ -25,9 +25,3 @@ test:
         timeout: 3000
     - cabal test --show-details=always:
         timeout: 3000
-
-# deployment:
-#   staging:
-#     branch: master
-#     commands:
-#       - ./deploy_staging.sh

@@ -24,6 +24,8 @@ import           GHC.Generics
 import           Language.StructuredScript.Parsers
 import           Yesod
 
+import qualified Plowtech.Persist.Mask.Types
+
 testCompile :: String
 testCompile = "tst"
 

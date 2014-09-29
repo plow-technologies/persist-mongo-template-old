@@ -7,7 +7,6 @@ import           Data.Aeson.Types
 import           Data.List
 import           Data.Time
 import           Data.Time.Calendar.WeekDate
--- import           Data.Traversable
 import           Persist.Mongo.Settings
 import           Yesod                       hiding (runDB)
 
@@ -16,15 +15,15 @@ import           Yesod                       hiding (runDB)
 fullDayInSeconds :: Integer
 fullDayInSeconds =  86400
 
-isOnDuty :: MongoDBConf -> UserId -> UTCTime -> IO Bool
+isOnDuty :: (MonadIO m) => MongoDBConf -> UserId -> UTCTime -> m Bool
 isOnDuty mdbc uid time = do
-  tz <- getCurrentTimeZone
+  tz <- liftIO $ getCurrentTimeZone
   let day = utctDay time   
   let weekDay = (third $ toWeekDate day) - 1 -- the day of the week it is, formatted like the javascript counterpart
   let diffTime = utctDayTime time -- how many seconds into the day
   let timeZoneDiffTimes = secondsToDiffTime . toInteger $ (timeZoneMinutes tz) * 60
   let diffTimeWTimeZone =  fromInteger $ mod (round $ diffTime + timeZoneDiffTimes) fullDayInSeconds
-  mcalObj <- runDBConf mdbc  $ getBy $ UniqueUserId uid
+  mcalObj <- liftIO $ runDBConf mdbc  $ getBy $ UniqueUserId uid
   case entityVal <$> mcalObj of
     Nothing -> do
       return False

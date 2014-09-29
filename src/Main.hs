@@ -1,12 +1,15 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
+
 module Main where
+
 import           Database.Persist
 import           Persist.Mongo.Settings
 import           Prelude                (IO, print, ($), (.))
--- Types
 import           Control.Applicative    ((<$>))
 import           Data.Either
+
+import           Plowtech.Persist.Settings
 
 
 main :: IO ()

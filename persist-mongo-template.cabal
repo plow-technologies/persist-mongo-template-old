@@ -62,7 +62,8 @@ Library
                        , network                  
                        , yesod-core               >= 1.2.17
                        , yesod                    
-                       , template-haskell         
+                       , template-haskell
+                       , persist-types
 
                        
 
@@ -114,6 +115,7 @@ Executable persist-mongo-template
                       , containers               
                       , unordered-containers     
                       , lens                     
+                      , persist-types
 
     ghc-options:      -threaded -O2 -rtsopts
 

@@ -16,6 +16,8 @@ import Mask.Types
 --import Text.Julius
 --import qualified Data.Aeson as A
 
+import Plowtech.Persist.Mask()
+
 
 instance (Hashable a,SafeCopy a, SafeCopy b, Ord a) => SafeCopy (M.HashMap a b) where
     getCopy = contain $ fmap M.fromList safeGet
