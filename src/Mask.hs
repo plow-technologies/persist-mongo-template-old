@@ -16,7 +16,6 @@ import qualified Data.HashMap.Strict as M
 -- import Language.StructuredScript
 import Language.StructuredScript.Parsers 
 import Mask.Types
-import Mask.BuiltIns
 import Data.SafeCopy
 import Persist.Mongo.Settings
 import Data.Serialize hiding (get)
@@ -34,62 +33,13 @@ import Data.Text hiding (zip)
 import Data.Text.Read
 
 import Plowtech.Persist.Settings (MongoDBConf, runDBConf)
+import qualified Plowtech.Persist.Mask as PM
+import Plowtech.Persist.Mask.Types
 
-testCompile :: String
-testCompile = "tst"
 
 -- | Add your builtIn Functions here, BuiltIns and in Types
 maskLookup :: MongoDBConf -> MaskData  -> IO MaskFcn
-maskLookup _ (MaskData DivByTen  _) =  return $ OneVar $ divBy10
-maskLookup _ (MaskData DivBy100  _) =  return $ OneVar $ divBy100
-maskLookup _ (MaskData MultByTen  _) =  return $ OneVar $ multBy10
-maskLookup _ (MaskData MultBy100  _) =  return $ OneVar $ multBy100
-
-
--- | maskLookup for Bit Operation Functions
-maskLookup _ (MaskData Bit0 _) =  return $ OneVar $ bit0
-maskLookup _ (MaskData Bit1 _) =  return $ OneVar $ bit1
-maskLookup _ (MaskData Bit2 _) =  return $ OneVar $ bit2
-maskLookup _ (MaskData Bit3 _) =  return $ OneVar $ bit3
-maskLookup _ (MaskData Bit4 _) =  return $ OneVar $ bit4
-maskLookup _ (MaskData Bit5 _) =  return $ OneVar $ bit5
-maskLookup _ (MaskData Bit6 _) =  return $ OneVar $ bit6
-maskLookup _ (MaskData Bit7 _) =  return $ OneVar $ bit7
-maskLookup _ (MaskData Bit8 _) =  return $ OneVar $ bit8
-maskLookup _ (MaskData Bit9 _) =  return $ OneVar $ bit9
-maskLookup _ (MaskData Bit10 _) =  return $ OneVar $ bit10
-maskLookup _ (MaskData Bit11 _) =  return $ OneVar $ bit11
-maskLookup _ (MaskData Bit12 _) =  return $ OneVar $ bit12
-maskLookup _ (MaskData Bit13 _) =  return $ OneVar $ bit13
-maskLookup _ (MaskData Bit14 _) =  return $ OneVar $ bit14
-maskLookup _ (MaskData Bit15 _) =  return $ OneVar $ bit15
-
-
--- | maskLookup for invBit Operation Functions
-maskLookup _ (MaskData InvBit0 _) =  return $ OneVar $ invBit0
-maskLookup _ (MaskData InvBit1 _) =  return $ OneVar $ invBit1
-maskLookup _ (MaskData InvBit2 _) =  return $ OneVar $ invBit2
-maskLookup _ (MaskData InvBit3 _) =  return $ OneVar $ invBit3
-maskLookup _ (MaskData InvBit4 _) =  return $ OneVar $ invBit4
-maskLookup _ (MaskData InvBit5 _) =  return $ OneVar $ invBit5
-maskLookup _ (MaskData InvBit6 _) =  return $ OneVar $ invBit6
-maskLookup _ (MaskData InvBit7 _) =  return $ OneVar $ invBit7
-maskLookup _ (MaskData InvBit8 _) =  return $ OneVar $ invBit8
-maskLookup _ (MaskData InvBit9 _) =  return $ OneVar $ invBit9
-maskLookup _ (MaskData InvBit10 _) =  return $ OneVar $ invBit10
-maskLookup _ (MaskData InvBit11 _) =  return $ OneVar $ invBit11
-maskLookup _ (MaskData InvBit12 _) =  return $ OneVar $ invBit12
-maskLookup _ (MaskData InvBit13 _) =  return $ OneVar $ invBit13
-maskLookup _ (MaskData InvBit14 _) =  return $ OneVar $ invBit14
-maskLookup _ (MaskData InvBit15 _) =  return $ OneVar $ invBit15
-
-
--- | maskLookup for Identity Function
-maskLookup _ (MaskData Identity _) =  return $ OneVar $ identity
-
--- | maskLookup for UserDefined Function
-maskLookup mdbc (MaskData UserDefined  um) =  UserDef <$> (tagMapTransform mdbc um)
--- maskLookup (MaskData _  um ) =  return $ OneVar $ (\x -> Right x)
+maskLookup = PM.maskLookup
 
 maskPullOut :: MaskFcn -> Const -> Either String Const
 maskPullOut (OneVar f ) = f
@@ -110,34 +60,13 @@ triggerTransform mdbc (UserMask _ tm) fcn = do
   return $ fcn (VT vtReady)
     
 keyTraverseFcn :: MongoDBConf -> Text -> (TagTarget Int) -> IO Const
-keyTraverseFcn = keyTraverseFcn
+keyTraverseFcn = PM.keyTraverseFcn
 
 tagMapTransform :: MongoDBConf -> UserMask -> IO (Const -> Either String Const)
-tagMapTransform mdbc (UserMask stmt tm)  = do
-  vtReady <- M.traverseWithKey (keyTraverseFcn mdbc) tm
-  return $ runner vtReady
-    where
-      runner vt x = let vtNew = VT (M.insert "input1" x vt)
-                    in (sstEval vtNew stmt ) >>= sstLookupOutput
-
-insertPidKeys :: UserMask -> [Int] -> UserMask
-insertPidKeys (UserMask stmt _) pList = do 
-  let tFcn x = TagTarget x TagCombined
-      iFcn x = append "input" (pack.show $ x)
-  UserMask stmt (M.fromList [(iFcn i, tFcn p) | (i,p) <- (zip ( [1 ..]::[Int]) pList) ] )
-
+tagMapTransform = PM.tagMapTransform
 
 mkUserMask :: Stmt -> UserMask 
 mkUserMask stmts = emptyUserMask { getStmtTree = stmts}
-
-mkMaskDataStore :: BuiltInId -> UserMask -> MaskDataStore 
-mkMaskDataStore b u = maskDataEncode $ MaskData b u
-
-maskDataDecode :: MaskDataStore -> Either String MaskData
-maskDataDecode (MaskDataStore maskBS) = runGet safeGet maskBS
-
-maskDataEncode :: MaskData -> MaskDataStore 
-maskDataEncode md = MaskDataStore $ runPut $ safePut $ md
 
 mkStmt :: SSTConfig -> Either String Stmt 
 mkStmt (SSTConfig _ _ wc) = sstParse (unpack wc)
@@ -158,7 +87,7 @@ makeMaskTypeIdFromJSON = cnvServe.cnv
 data SSTConfig = SSTConfig{
                          inputValues :: ![Integer], -- Test values used in mask creation
                          inputNames  :: ![Text],    -- Names of various input labels in order
-                         workingCode ::  !Text --structured script code body
+                         workingCode :: !Text --structured script code body
 } deriving (Show, Eq, Generic)
 
 instance A.ToJSON SSTConfig
@@ -172,39 +101,12 @@ testStructuredScript = SSTConfig [] [] ""
 decodeMaskAssignConfig :: A.Value -> A.Result MaskAssignConfig
 decodeMaskAssignConfig = A.fromJSON
      
-data MaskAssignConfig = MaskAssignConfig { 
-  macMaskTypeId :: !(Maybe MaskTypeId),
-  macKeys       :: ![Int],
-  macBuiltIn    :: !BuiltInId,
-  macDefault    :: !Bool,
-  macName       :: !(Maybe Text)
-  }
-   deriving (Show,Eq,Generic)
-
-
-instance ToJSON MaskAssignConfig where 
-instance FromJSON MaskAssignConfig where 
-
 maskAssignConfigToMaskTypeJoin :: MongoDBConf -> MaskAssignConfig -> IO (Either Text MaskTypeJoin) 
-maskAssignConfigToMaskTypeJoin _ (MaskAssignConfig _ [] _ _ _) = do
-  let err :: Text  
-      err = "no keys present"
-  return.Left $ err  
-maskAssignConfigToMaskTypeJoin mdbc (MaskAssignConfig mmtid keys@(primaryKey:_) bid dflt mname) = do
-  _ <- resetMTJDefault mdbc primaryKey dflt
-  case mmtid of
-    Nothing -> do
-      ey <- (makeBuiltInDataStore keys bid)
-      return $ ey >>= (\y -> return $ MaskTypeJoin y mmtid primaryKey dflt mname)
-    (Just mtid) -> do 
-      ex <- (makeUserDefDataStore mdbc keys mtid) 
-      return $ ex >>= (\x -> return $ MaskTypeJoin x mmtid primaryKey dflt mname)
+maskAssignConfigToMaskTypeJoin = PM.maskAssignConfigToMaskTypeJoin
 
 makeBuiltInDataStore :: [Int] -> BuiltInId -> IO (Either Text MaskDataStore)
-makeBuiltInDataStore keys binId = do
-  let bium = insertPidKeys emptyUserMask keys
-  return (return $ mkMaskDataStore binId bium)
-  
+makeBuiltInDataStore i bid = return $ PM.makeBuiltInDataStore i bid
+
 makeUserDefDataStore :: MongoDBConf -> [Int] -> MaskTypeId -> IO (Either Text MaskDataStore)
 makeUserDefDataStore mdbc keys mtid = do  
   mmsktype <- runDBConf mdbc $ get mtid
@@ -220,8 +122,6 @@ makeUserDefDataStore mdbc keys mtid = do
         where 
           err :: Text 
           err = "makeUserDefDataStore failed to encode a MaskDataStore"
-
-
   
 resetMTJDefault :: MongoDBConf -> Int -> Bool -> IO ()
 resetMTJDefault mdbc primaryKey dflt = do
@@ -230,41 +130,14 @@ resetMTJDefault mdbc primaryKey dflt = do
     False -> return ()
 
 getMaskFunctionDefault :: MongoDBConf -> Int -> IO (Either Text (Const -> Either String Const)) 
-getMaskFunctionDefault mdbc pid = do
-  mtje <- runDBConf mdbc $ selectFirst [(MaskTypeJoinPKey ==. pid),(MaskTypeJoinDefaultSelect ==. True)] []
-  case mtje of
-    Nothing -> do
-      let err :: Text
-          err = "No defaultMaskTypeJoin found"
-      return $ Left err
-    (Just mtj) -> do 
-      let mds = maskTypeJoinValue.entityVal $ mtj
-          edecodeMDS = maskDataDecode mds
-          decodedMDS = (eStringToEText edecodeMDS) :: Either Text MaskData     
-      edecodeUM <- T.traverse (maskLookup mdbc) decodedMDS 
-      return $ maskPullOut <$>  edecodeUM
+getMaskFunctionDefault = PM.getMaskFunctionDefault
 
--- insertPidKeys :: UserMask -> [Int] -> UserMask
 
 mdsToFcn :: MongoDBConf -> [Int] -> MaskDataStore -> IO (Either Text (Const -> Either String Const ))
-mdsToFcn mdbc pids mds = do 
-  let emd =  (eStringToEText.maskDataDecode $ mds)
-      eum = ( (\um -> insertPidKeys um pids ) . userMask) <$> emd
-      emd' = eum >>= (\um ->  emd >>= (\md -> return $ md{userMask= um}))
-  (T.traverse (maskLookup mdbc) emd') >>= (\x -> return $ maskPullOut <$> x)
-
-  
+mdsToFcn = PM.mdsToFcn
 
 onpingTagCombinedDefaultTransform :: MongoDBConf -> OnpingTagCombined -> IO OnpingTagCombined
-onpingTagCombinedDefaultTransform mdbc otc = do      
-  let (Just pid) = onpingTagCombinedPid otc
-      result = onpingTagCombinedResult otc
-  fcn <- returnDefaultMaskFunction mdbc pid
-  let constresult = ((textToConst >=> fcn) <$> result) >>= etom
-      etom (Left _) = Nothing  
-      etom (Right x) = Just x
-  let newresult = constToText <$> constresult
-  return $ (otc {onpingTagCombinedResult = newresult})
+onpingTagCombinedDefaultTransform = PM.onpingTagCombinedDefaultTransform
     
 returnDefaultMaskFunction :: MongoDBConf -> Int -> IO (Const -> Either String Const)   
 returnDefaultMaskFunction mdbc pid = do
@@ -321,9 +194,6 @@ doubleToConst dbl = do
   return $ ConstDouble dbl
 
 
-
-
-
 -- |utility function
 
 eStringToEText :: Either String a -> Either Text a
@@ -373,5 +243,5 @@ returnAlarmMaskFcn mdbc apids amds = do
 
 getBuiltInIdR :: Monad m => m Value
 getBuiltInIdR = do
-let bil=[minBound..maxBound] :: [BuiltInId]
-return $ toJSON (L.init bil)
+  let bil = [minBound..maxBound] :: [BuiltInId]
+  return $ toJSON (L.init bil)
