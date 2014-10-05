@@ -181,14 +181,8 @@ onpingTagHistoryDefaultTransform  mdbc pids oth = do
   return [ f o | o@(OnpingTagHistory ph _ vh) <- oth , (p , f) <- pairPandF , ph == (Just p), vh /= Nothing]
 
 extracted :: T.Traversable f =>  MongoDBConf -> f Int -> IO (f (OnpingTagHistory -> OnpingTagHistory))
-extracted mdbc uniquePids = do
-   uniqueCFcns <- T.traverse (returnDefaultMaskFunction mdbc) uniquePids
-   
-   return $ onpingTagHWrapper <$> uniqueCFcns
-
-
-             
-
+extracted = PM.extracted
+            
 doubleToConst :: Double -> Either String Const
 doubleToConst dbl = do
   return $ ConstDouble dbl
