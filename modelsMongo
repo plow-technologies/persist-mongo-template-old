@@ -350,6 +350,7 @@ Alarm
  gId GroupId
  gPermissions UserPermissionsList
  deriving Generic
+ deriving Eq
 
 AlarmJoins
  alarmId AlarmId
@@ -357,6 +358,7 @@ AlarmJoins
  siteId SiteId
  locationId LocationId
  deriving Generic
+ deriving Eq
 
 -- ==================================================
 -- Single Well Types
